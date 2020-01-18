@@ -79,6 +79,11 @@ public class IntrospectedColumn {
      */
     protected boolean isGeneratedAlways;
 
+    /** 表名转换后的驼峰式名称（首字母小写）tableName */
+    private String lowerCamelCaseName;
+    /** 表名转换后的驼峰式名称（首字母大写） TableName */
+    private String upperCamelCaseName;
+
     /**
      * Constructs a Column definition. This object holds all the information
      * about a column that is required to generate Java objects and SQL maps;
@@ -117,6 +122,22 @@ public class IntrospectedColumn {
 
     public void setScale(int scale) {
         this.scale = scale;
+    }
+
+    public String getLowerCamelCaseName() {
+        return lowerCamelCaseName;
+    }
+
+    public void setLowerCamelCaseName(String lowerCamelCaseName) {
+        this.lowerCamelCaseName = lowerCamelCaseName;
+    }
+
+    public String getUpperCamelCaseName() {
+        return upperCamelCaseName;
+    }
+
+    public void setUpperCamelCaseName(String upperCamelCaseName) {
+        this.upperCamelCaseName = upperCamelCaseName;
     }
 
     /*

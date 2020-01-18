@@ -18,8 +18,7 @@ package com.github.vazmin.code.generator.internal.types;
 import com.github.vazmin.code.generator.api.IntrospectedColumn;
 import com.github.vazmin.code.generator.api.JavaTypeResolver;
 import com.github.vazmin.code.generator.api.dom.java.FullyQualifiedJavaType;
-import com.github.vazmin.code.generator.config.ApplicationProperties;
-import com.github.vazmin.code.generator.utils.StringUtility;
+import com.github.vazmin.code.generator.config.AppProperties;
 
 import java.math.BigDecimal;
 import java.sql.Types;
@@ -115,8 +114,7 @@ public class JavaTypeResolverDefaultImpl implements JavaTypeResolver {
     }
 
     @Override
-    public void addConfigurationProperties(ApplicationProperties.JavaTypeResolver javaTypeResolver) {
-
+    public void addConfigurationProperties(AppProperties.JavaTypeResolver javaTypeResolver) {
         forceBigDecimals = javaTypeResolver.getForceBigDecimals();
         useJSR310Types = javaTypeResolver.getUseJSR310Types();
     }

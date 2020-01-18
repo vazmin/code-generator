@@ -1,22 +1,42 @@
 
 application:
+  author: wangzhiming
   table-names: menu_info
+  template-loader-path: &tlp "classpath:/templates/"
+  output-root-dir: f:/temp/wow
+  pkg: com.github.vazmin.manage.simple
+  modulePkg:
+  url:
+    value: /system/user
+    frontend-prefix: /pages
+    backend-prefix: /api
+  folders:
+    # source-folder
+    - path: /src/main/java/${application.pkg}
+      tpl-i-o-list:
+        - tpl-path: TableName.java.ftl
+          target: /model
+        - tpl-path: TableNameController.java.ftl
+          target: /web
+        - tpl-path: TableNameMapper.java.ftl
+          target: &daoDir /dao
+        - tpl-path: TableNameService.java.ftl
+          target: /service
+    # resource-folder:
+    - path: /src/main/resources/${application.pkg}
+      tpl-i-o-list:
+        - tpl-path: TableNameMapper.xml.ftl
+          target: *daoDir
+    # webapp-folder:
+    - path: /src/main/webapp
+      tpl-i-o-list:
+        - tpl-path: view/*
+          target: /app${application.url.frontend-prefix}${application.url.value}
 
-
-logging:
-  level:
-    ROOT: INFO
-    com.github.vazmin: DEBUG
 
 spring:
-  application:
-    name: Code Generator
-  profiles:
-    # The commented value for `active` can be replaced with valid Spring profiles to load.
-    # Otherwise, it will be filled in by maven when building the JAR file
-    # Either way, it can be overridden by `--spring.profiles.active` value passed in the commandline or `-Dspring.profiles.active` set in `JAVA_OPTS`
-    active: #spring.profiles.active#
-
+  freemarker:
+    template-loader-path: *tlp
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     url: jdbc:mysql://localhost:3306/manage_platform?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&useInformationSchema=true
@@ -30,6 +50,12 @@ spring:
         prepStmtCacheSize: 250
         prepStmtCacheSqlLimit: 2048
         useServerPrepStmts: true
+
+logging:
+  level:
+    ROOT: INFO
+    com.github.vazmin: DEBUG
+
 #  jpa:
 #    open-in-view: false
 #    hibernate:

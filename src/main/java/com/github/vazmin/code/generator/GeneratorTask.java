@@ -1,10 +1,12 @@
 package com.github.vazmin.code.generator;
 
 import com.github.vazmin.code.generator.api.JavaTypeResolver;
-import com.github.vazmin.code.generator.config.ApplicationProperties;
+import com.github.vazmin.code.generator.config.AppProperties;
+import com.github.vazmin.code.generator.engine.TplEngine;
 import com.github.vazmin.code.generator.internal.db.DatabaseIntrospector;
 import com.github.vazmin.code.generator.api.IntrospectedTable;
 import com.github.vazmin.code.generator.model.TableConfiguration;
+import com.github.vazmin.code.generator.service.GeneratorService;
 import com.zaxxer.hikari.HikariDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,8 +16,12 @@ import org.springframework.stereotype.Component;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -25,7 +31,7 @@ import java.util.stream.Collectors;
 public class GeneratorTask {
 
     @Autowired
-    ApplicationProperties applicationProperties;
+    AppProperties appProperties;
 
     private static final Logger log = LoggerFactory.getLogger(GeneratorTask.class);
 
@@ -35,10 +41,15 @@ public class GeneratorTask {
     @Autowired
     JavaTypeResolver javaTypeResolver;
 
+    @Autowired
+    GeneratorService generatorService;
+
     List<IntrospectedTable> introspectedTableList;
 
-    public void start() throws SQLException {
-       introspectedTableList = calculateTableAndColumnSchema();
+
+    public void start() throws Exception {
+        introspectedTableList = calculateTableAndColumnSchema();
+        generatorService.process(introspectedTableList);
     }
 
     public List<IntrospectedTable> calculateTableAndColumnSchema() throws SQLException {
@@ -47,7 +58,7 @@ public class GeneratorTask {
         DatabaseMetaData databaseMetaData = connection.getMetaData();
         final String catalog = connection.getCatalog();
         final String schema = connection.getSchema();
-        List<TableConfiguration> tableConfigurationList = applicationProperties.getTableNames()
+        List<TableConfiguration> tableConfigurationList = appProperties.getTableNames()
                 .stream()
                 .map(name -> new TableConfiguration(catalog, schema, name))
                 .collect(Collectors.toList());

@@ -1,6 +1,5 @@
 package com.github.vazmin.code.generator.api;
 
-import com.github.vazmin.code.generator.api.IntrospectedColumn;
 import com.github.vazmin.code.generator.internal.db.ActualTableName;
 import com.github.vazmin.code.generator.model.TableConfiguration;
 import com.github.vazmin.code.generator.utils.FieldNaming;
@@ -20,11 +19,11 @@ public class IntrospectedTable {
 
     private String tableName;
 
-    /** 表名转换后的驼峰式名称（首字母小写） */
-    private String camelCaseName;
-    /** 表名转换后的驼峰式名称（首字母大写） */
-    private String upperCaseName;
-    /** 表名转换后的小写带减号名称 */
+    /** 表名转换后的驼峰式名称（首字母小写）tableName */
+    private String lowerCamelCaseName;
+    /** 表名转换后的驼峰式名称（首字母大写） TableName */
+    private String upperCamelCaseName;
+    /** 表名转换后的小写带减号名称 table-name*/
     private String lowerCaseSubName;
 
     private String remarks;
@@ -50,25 +49,25 @@ public class IntrospectedTable {
 
     public void setTableName(String tableName) {
         this.tableName = tableName;
-        this.camelCaseName = FieldNaming.toCamelCase(tableName);
-        this.upperCaseName = FieldNaming.upperCaseFirstLetter(this.camelCaseName);
+        this.lowerCamelCaseName = FieldNaming.toCamelCase(tableName);
+        this.upperCamelCaseName = FieldNaming.upperCaseFirstLetter(this.lowerCamelCaseName);
         this.lowerCaseSubName = tableName.replace('_', '-');
     }
 
-    public String getCamelCaseName() {
-        return camelCaseName;
+    public String getLowerCamelCaseName() {
+        return lowerCamelCaseName;
     }
 
-    public void setCamelCaseName(String camelCaseName) {
-        this.camelCaseName = camelCaseName;
+    public void setLowerCamelCaseName(String lowerCamelCaseName) {
+        this.lowerCamelCaseName = lowerCamelCaseName;
     }
 
-    public String getUpperCaseName() {
-        return upperCaseName;
+    public String getUpperCamelCaseName() {
+        return upperCamelCaseName;
     }
 
-    public void setUpperCaseName(String upperCaseName) {
-        this.upperCaseName = upperCaseName;
+    public void setUpperCamelCaseName(String upperCamelCaseName) {
+        this.upperCamelCaseName = upperCamelCaseName;
     }
 
     public String getLowerCaseSubName() {
@@ -77,6 +76,13 @@ public class IntrospectedTable {
 
     public void setLowerCaseSubName(String lowerCaseSubName) {
         this.lowerCaseSubName = lowerCaseSubName;
+    }
+
+    public String getClearRemark() {
+        if (remarks.endsWith("表")) {
+            return remarks.substring(0, remarks.lastIndexOf("表"));
+        }
+        return remarks;
     }
 
     public String getRemarks() {

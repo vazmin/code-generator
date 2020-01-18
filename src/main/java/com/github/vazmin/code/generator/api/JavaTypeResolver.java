@@ -19,10 +19,7 @@ package com.github.vazmin.code.generator.api;
 //import org.mybatis.generator.config.Context;
 
 import com.github.vazmin.code.generator.api.dom.java.FullyQualifiedJavaType;
-import com.github.vazmin.code.generator.config.ApplicationProperties;
-
-import java.util.List;
-import java.util.Properties;
+import com.github.vazmin.code.generator.config.AppProperties;
 
 /**
  * This interface describes methods that are required in any Java type resolver.
@@ -41,7 +38,7 @@ public interface JavaTypeResolver {
      * @param javaTypeResolver
      *            All properties from the configuration
      */
-    void addConfigurationProperties(ApplicationProperties.JavaTypeResolver javaTypeResolver);
+    void addConfigurationProperties(AppProperties.JavaTypeResolver javaTypeResolver);
 
     /**
      * Calculates and returns the Java type that should be associated with this
