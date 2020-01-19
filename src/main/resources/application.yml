@@ -1,18 +1,18 @@
 
 application:
-  author: wangzhiming
   table-names: menu_info
-  template-loader-path: &tlp "classpath:/templates/"
-  output-root-dir: f:/temp/wow
+  search-column-names: id
   pkg: com.github.vazmin.manage.simple
-  modulePkg:
+  modulePkg: system
   url:
-    value: /system/user
+    value: /system/menu-info
     frontend-prefix: /pages
     backend-prefix: /api
+  output-root-dir: ./target/wow
   folders:
     # source-folder
     - path: /src/main/java/${application.pkg}
+      java: true
       tpl-i-o-list:
         - tpl-path: TableName.java.ftl
           target: /model
@@ -32,7 +32,12 @@ application:
       tpl-i-o-list:
         - tpl-path: view/*
           target: /app${application.url.frontend-prefix}${application.url.value}
-
+        - tpl-path: i18n/en/tableName.json.ftl
+          target: /assets/i18n/en/${application.modulePkg}
+        - tpl-path: i18n/zh-cn/tableName.json.ftl
+          target: /assets/i18n/zh-cn/${application.modulePkg}
+  template-loader-path: &tlp "classpath:/templates/"
+  author: wangzhiming
 
 spring:
   freemarker:
@@ -41,7 +46,7 @@ spring:
     type: com.zaxxer.hikari.HikariDataSource
     url: jdbc:mysql://localhost:3306/manage_platform?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&useInformationSchema=true
     username: root
-    password: "0302"
+    password: "chwing"
     hikari:
       poolName: Hikari
       auto-commit: false
@@ -55,21 +60,3 @@ logging:
   level:
     ROOT: INFO
     com.github.vazmin: DEBUG
-
-#  jpa:
-#    open-in-view: false
-#    hibernate:
-#      ddl-auto: none
-#      naming:
-#        physical-strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
-#        implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
-#    database-platform: org.hibernate.dialect.MySQL57Dialect
-#    database: MYSQL
-#    show-sql: true
-#    properties:
-#      hibernate.id.new_generator_mappings: true
-#      hibernate.connection.provider_disables_autocommit: true
-#      hibernate.cache.use_second_level_cache: false
-#      hibernate.cache.use_query_cache: false
-#      hibernate.generate_statistics: false
-#      hibernate.jdbc.time_zone: UTC

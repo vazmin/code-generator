@@ -1,5 +1,6 @@
 package com.github.vazmin.code.generator.config;
 
+import com.github.vazmin.code.generator.utils.StringUtility;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.Assert;
 
@@ -17,7 +18,7 @@ public class AppProperties {
 
     private String author;
     /** table name list */
-    private List<String> tableNames;
+    private String [] tableNames;
 
     private String pkg;
 
@@ -27,7 +28,11 @@ public class AppProperties {
 
     private String outputRootDir;
 
-    private String searchColumnName;
+    private String[] searchColumnNames;
+
+    private boolean override = false;
+
+    private String datePattern = "yyyy/M/d";
 
     private List<Folder> folders;
 
@@ -69,12 +74,23 @@ public class AppProperties {
         this.outputRootDir = outputRootDir;
     }
 
-    public String getSearchColumnName() {
-        return searchColumnName;
+    public String[] getSearchColumnNames() {
+        return searchColumnNames;
     }
 
-    public void setSearchColumnName(String searchColumnName) {
-        this.searchColumnName = searchColumnName;
+    public void setSearchColumnNames(String[] searchColumnNames) {
+        this.searchColumnNames = searchColumnNames;
+    }
+
+    public String getSearchColumnName(String tableName) {
+        if (tableNames.length == searchColumnNames.length) {
+            for(int i = 0; i < tableNames.length; i++) {
+                if (tableName.equals(tableNames[i])) {
+                    return searchColumnNames[i];
+                }
+            }
+        }
+        return "";
     }
 
     public List<Folder> getFolders() {
@@ -85,12 +101,12 @@ public class AppProperties {
         this.folders = folders;
     }
 
-    public List<String> getTableNames() {
+    public String[] getTableNames() {
         Assert.notEmpty(tableNames, "application.table-names is empty.");
         return tableNames;
     }
 
-    public void setTableNames(List<String> tableNames) {
+    public void setTableNames(String[] tableNames) {
         this.tableNames = tableNames;
     }
 
@@ -108,6 +124,22 @@ public class AppProperties {
 
     public JavaTypeResolver getJavaTypeResolver() {
         return javaTypeResolver;
+    }
+
+    public boolean isOverride() {
+        return override;
+    }
+
+    public void setOverride(boolean override) {
+        this.override = override;
+    }
+
+    public String getDatePattern() {
+        return datePattern;
+    }
+
+    public void setDatePattern(String datePattern) {
+        this.datePattern = datePattern;
     }
 
     public static class Url {
@@ -157,7 +189,10 @@ public class AppProperties {
     }
 
     public static class Folder {
+
         private String path;
+
+        private boolean java = false;
 
         private List<TplIO> tplIOList;
 
@@ -175,6 +210,19 @@ public class AppProperties {
 
         public void setTplIOList(List<TplIO> tplIOList) {
             this.tplIOList = tplIOList;
+        }
+
+        public boolean isJava() {
+            return java;
+        }
+
+        public void setJava(boolean java) {
+            this.java = java;
+        }
+
+        public String getPkg(String basePkg) {
+            String pkg = StringUtility.pathToPackage(this.path);
+            return pkg.substring(pkg.indexOf(basePkg));
         }
     }
 
@@ -197,6 +245,12 @@ public class AppProperties {
 
         public void setTarget(String target) {
             this.target = target;
+        }
+
+        public String getTplPkg() {
+            String tplPkg =  target != null ?
+                    StringUtility.pathToPackage(target) : "";
+            return tplPkg.startsWith(".") || tplPkg.equals("") ? tplPkg : "." + tplPkg;
         }
     }
 

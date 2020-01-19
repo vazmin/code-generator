@@ -17,9 +17,12 @@ package com.github.vazmin.code.generator.api;
 
 
 import com.github.vazmin.code.generator.api.dom.java.FullyQualifiedJavaType;
+import com.github.vazmin.code.generator.utils.FieldNaming;
 import com.github.vazmin.code.generator.utils.StringUtility;
+import org.apache.commons.lang3.StringUtils;
 
 import java.sql.Types;
+import java.util.StringTokenizer;
 
 /**
  * This class holds information about an introspected column.
@@ -168,6 +171,8 @@ public class IntrospectedColumn {
         this.actualColumnName = actualColumnName;
         isColumnNameDelimited = StringUtility
                 .stringContainsSpace(actualColumnName);
+        this.lowerCamelCaseName = FieldNaming.toCamelCase(actualColumnName);
+        this.upperCamelCaseName = FieldNaming.upperCaseFirstLetter(this.lowerCamelCaseName);
     }
 
     public boolean isIdentity() {
@@ -276,16 +281,22 @@ public class IntrospectedColumn {
         this.tableAlias = tableAlias;
     }
 
+    public String getClearRemark() {
+        StringTokenizer token = new StringTokenizer(remarks, ",，.:： ");
+        if (token.countTokens() != 0) {
+            while (token.hasMoreTokens()) {
+                String str = token.nextToken();
+                if (StringUtils.isNotBlank(str)) {
+                    return str;
+                }
+            }
+        }
+        return remarks;
+    }
 
-
-//    public IntrospectedTable getIntrospectedTable() {
-//        return introspectedTable;
-//    }
-//
-//    public void setIntrospectedTable(IntrospectedTable introspectedTable) {
-//        this.introspectedTable = introspectedTable;
-//    }
-//
+    public String getEnRemark() {
+        return FieldNaming.separateCamelCase(getUpperCamelCaseName(), " ");
+    }
 
     public String getRemarks() {
         return remarks;
@@ -348,5 +359,9 @@ public class IntrospectedColumn {
 
     public void setActualTypeName(String actualTypeName) {
         this.actualTypeName = actualTypeName;
+    }
+
+    public String getJavaType() {
+        return fullyQualifiedJavaType.getShortName();
     }
 }

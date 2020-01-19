@@ -115,4 +115,10 @@ public class StringUtility {
 
         return s.indexOf('%') != -1 || s.indexOf('_') != -1;
     }
+
+    public static String pathToPackage(String path) {
+        return path == null ?  null : path.replace("\\\\", ".")
+                .replace("\\", ".")
+                .replace("/", ".");
+    }
 }
