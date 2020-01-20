@@ -1,0 +1,47 @@
+
+application:
+  table-names: menu_info
+  search-column-names: id
+  pkg: com.github.vazmin.manage.simple
+  modulePkg: system
+  url:
+    value: /system/menu-info
+    frontend-prefix: /pages
+    backend-prefix: /api
+  output-root-dir: ./target/wow
+  folders:
+    # source-folder
+    - path: /src/main/java/${application.pkg}
+      java: true
+      tpl-i-o-list:
+        - tpl-path: TableName.java.ftl
+          target: /model
+        - tpl-path: TableNameController.java.ftl
+          target: /controller
+        - tpl-path: TableNameMapper.java.ftl
+          target: &daoDir /dao
+        - tpl-path: TableNameService.java.ftl
+          target: /service
+    # resource-folder:
+    - path: /src/main/resources/${application.pkg}
+      tpl-i-o-list:
+        - tpl-path: TableNameMapper.xml.ftl
+          target: *daoDir
+    # webapp-folder:
+    - path: /src/main/webapp
+      tpl-i-o-list:
+        - tpl-path: view/*
+          target: /app${application.url.frontend-prefix}${application.url.value}
+        - tpl-path: i18n/en/tableName.json.ftl
+          target: /assets/i18n/en/${application.modulePkg}
+        - tpl-path: i18n/zh-cn/tableName.json.ftl
+          target: /assets/i18n/zh-cn/${application.modulePkg}
+  author: wangzhiming
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/manage_platform?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&useInformationSchema=true
+    username: root
+    password: "chwing"
+
+

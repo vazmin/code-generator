@@ -1,6 +1,6 @@
 package com.github.vazmin.code.generator.other;
 
-import com.github.vazmin.code.generator.Application;
+import com.github.vazmin.code.generator.GeneratorApp;
 import com.zaxxer.hikari.HikariDataSource;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -8,14 +8,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import javax.sql.DataSource;
 import java.sql.*;
 import java.util.Arrays;
 
 /**
  * Created by Chwing on 2019/12/29.
  */
-@SpringBootTest(classes = Application.class)
+@SpringBootTest(classes = GeneratorApp.class)
 public class DatabaseMetaDataTest {
 
     private static final Logger log = LoggerFactory.getLogger(DatabaseMetaDataTest.class);

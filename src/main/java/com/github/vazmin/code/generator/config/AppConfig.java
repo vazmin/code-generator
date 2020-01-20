@@ -15,8 +15,10 @@ import org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean;
 public class AppConfig {
 
     @Bean
-    public JavaTypeResolver javaTypeResolver() {
-        return new JavaTypeResolverDefaultImpl();
+    public JavaTypeResolver javaTypeResolver(AppProperties appProperties) {
+        JavaTypeResolver javaTypeResolver =  new JavaTypeResolverDefaultImpl();
+        javaTypeResolver.addConfigurationProperties(appProperties.getJavaTypeResolver());
+        return javaTypeResolver;
     }
 
     @Bean

@@ -1,17 +1,13 @@
 package com.github.vazmin.code.generator.model;
 
-import com.github.vazmin.code.generator.utils.StringUtility;
-
-import java.io.File;
-import java.net.URI;
-
 /**
+ * Template File Path and Name
  * Created by Chwing on 2020/1/12.
  */
 public class TplFile {
-
+    /** template path. eg: TableName.java.ftl, view/table-name.service.ts.ftl */
     private String tplPath;
-
+    /** template file name. eg: TableName.java.ftl, table-name.service.ts.ftl  */
     private String tplName;
 
     private String alias;
@@ -19,12 +15,6 @@ public class TplFile {
     public TplFile(String tplPath, String tplName) {
         this.tplPath = tplPath;
         this.tplName = tplName;
-    }
-
-    public TplFile(String tplPath, String tplName, String alias) {
-        this.tplPath = tplPath;
-        this.tplName = tplName;
-        this.alias = alias;
     }
 
     public String getTplPath() {
@@ -56,5 +46,11 @@ public class TplFile {
 
     public String getPackageAlias() {
         return getAlias() + "Package";
+    }
+
+    @Override
+    public String toString() {
+        return "[tplName:" + tplName + ", tplPath:" + tplPath + "] "
+                + super.toString();
     }
 }

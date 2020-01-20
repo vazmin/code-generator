@@ -12,6 +12,7 @@ import freemarker.template.TemplateException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
@@ -38,6 +40,9 @@ public class GeneratorService {
     private final AppProperties appProperties;
 
     @Autowired
+    private ApplicationContext context;
+
+    @Autowired
     HikariDataSource dataSource;
 
     @Autowired
@@ -48,8 +53,6 @@ public class GeneratorService {
     protected final Map<String, Object> model = new HashMap<>();
     /** target path and template file mapping */
     protected final Map<String, Set<TplFile>> targetTemplateMap = new HashMap<>();
-    /** Resource Pattern Resolver */
-    private final ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
 
     public GeneratorService(AppProperties appProperties, TplEngine tplEngine) throws IOException {
         this.appProperties = appProperties;
@@ -76,12 +79,12 @@ public class GeneratorService {
     public void initIOInfo() throws IOException {
         List<AppProperties.Folder> folders = appProperties.getFolders();
         String templateLoaderPath = appProperties.getTemplateLoaderPath();
-        Resource resource = resolver.getResource(templateLoaderPath);
-        String absolutePath = resource.getFile().getAbsolutePath();
+        Resource resource = context.getResource(templateLoaderPath);
+        URL loaderUrl = resource.getURL();
         for (AppProperties.Folder folder: folders) {
             String target = appProperties.getOutputRootDir() + folder.getPath();
             for (AppProperties.TplIO tplIO : folder.getTplIOList()) {
-                Set<TplFile> fileSet = getResources(tplIO.getTplPath(), absolutePath);
+                Set<TplFile> fileSet = getResources(tplIO.getTplPath(), loaderUrl);
                 if (folder.isJava()) {
                     for (TplFile tplFile: fileSet) {
                         // set up class alias and package mapping
@@ -98,20 +101,23 @@ public class GeneratorService {
     /**
      * 根据配置文件获取模板文件
      * @param tplPath 模板路径
-     * @param absoluteTemplateLoaderPath 模板根目录绝对路径
+     * @param loaderUrl 模板根目录url
      * @return TplFile 文件set
      */
-    private Set<TplFile> getResources(String tplPath, String absoluteTemplateLoaderPath)  {
+    private Set<TplFile> getResources(String tplPath, URL loaderUrl)  {
         String tfPath = appProperties.getTemplateFilePath(tplPath);
         Set<TplFile> files = new HashSet<>();
         try {
-            Resource[] resources = resolver.getResources(tfPath);
+            Resource[] resources = context.getResources(tfPath);
             for (Resource resource : resources) {
                 if (resource.exists()) {
-                    File file = resource.getFile();
-                    files.add(new TplFile(
-                            file.getAbsolutePath().replace(absoluteTemplateLoaderPath, ""),
-                            file.getName()));
+                    URL resourceURL = resource.getURL();
+                    String path = resourceURL.getPath();
+                    TplFile tplFile = new TplFile(
+                            path.replace(loaderUrl.getPath(), ""),
+                            path.substring(path.lastIndexOf("/") + 1));
+                    files.add(tplFile);
+                    log.debug("Found Template: " + tplFile.toString());
                 } else {
                     log.error("template file no exists. {}", resource.getURL());
                 }

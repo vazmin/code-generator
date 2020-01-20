@@ -83,7 +83,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring-boot.version}</version>
                 <configuration>
-                    <mainClass>com.github.vazmin.code.generator.Application</mainClass>
+                    <mainClass>com.github.vazmin.code.generator.GeneratorApp</mainClass>
                 </configuration>
                 <executions>
                     <execution>
