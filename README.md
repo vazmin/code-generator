@@ -106,6 +106,12 @@ application:
   date-pattern: yyyy/M/d # date pattern
 ```
 
+### Other
+
+该项目主要执行两个动作：
+1. 通过 JDBC 连接提取表的元数据。代码实现 ~~参考~~ 复制 [mybatis/generator](https://github.com/mybatis/generator)
+2. 将提取的表信息渲染到模板
+
 ### FAQ
 
 ```

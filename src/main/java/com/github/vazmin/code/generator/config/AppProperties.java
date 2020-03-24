@@ -32,7 +32,7 @@ public class AppProperties {
 
     private boolean override = false;
 
-    private String datePattern = "yyyy/M/d";
+    private String datePattern = Constants.datePattern;
 
     private List<Folder> folders;
 
@@ -258,9 +258,9 @@ public class AppProperties {
 
     public static class JavaTypeResolver {
 
-        private Boolean forceBigDecimals;
+        private Boolean forceBigDecimals = Constants.JavaTypeResolver.forceBigDecimals;
 
-        private Boolean useJSR310Types;
+        private Boolean useJSR310Types = Constants.JavaTypeResolver.useJSR310Types;
 
         public Boolean getForceBigDecimals() {
             return forceBigDecimals;
