@@ -25,10 +25,7 @@ import com.github.vazmin.code.generator.utils.FieldNaming;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.*;
 
 import static com.github.vazmin.code.generator.utils.StringUtility.*;
@@ -37,15 +34,18 @@ import static com.github.vazmin.code.generator.utils.StringUtility.*;
 public class DatabaseIntrospector {
     private static final Logger log = LoggerFactory.getLogger(DatabaseIntrospector.class);
 
-    private DatabaseMetaData databaseMetaData;
+    private final DatabaseMetaData databaseMetaData;
 
-    private JavaTypeResolver javaTypeResolver;
+    private final JavaTypeResolver javaTypeResolver;
+
+    private final DatabaseProduct databaseProduct;
 
     public DatabaseIntrospector(
             DatabaseMetaData databaseMetaData,
-            JavaTypeResolver javaTypeResolver) {
+            JavaTypeResolver javaTypeResolver) throws SQLException {
         super();
         this.databaseMetaData = databaseMetaData;
+        this.databaseProduct = DatabaseProduct.nameOf(databaseMetaData.getDatabaseProductName());
         this.javaTypeResolver = javaTypeResolver;
     }
 
@@ -148,7 +148,7 @@ public class DatabaseIntrospector {
             introspectedColumn
                     .setNullable(rs.getInt("NULLABLE") == DatabaseMetaData.columnNullable); 
             introspectedColumn.setScale(rs.getInt("DECIMAL_DIGITS")); 
-            introspectedColumn.setRemarks(rs.getString("REMARKS")); 
+            introspectedColumn.setRemarks(getRemarks(rs, rs.getString("COLUMN_NAME")));
             introspectedColumn.setDefaultValue(rs.getString("COLUMN_DEF")); 
 
             if (supportsIsAutoIncrement) {
@@ -310,15 +310,56 @@ public class DatabaseIntrospector {
             ResultSet rs = databaseMetaData.getTables(tc.getCatalog(), tc.getSchema(),
                     tc.getTableName(), null);
             if (rs.next()) {
-                String remarks = rs.getString("REMARKS"); 
                 String tableType = rs.getString("TABLE_TYPE"); 
-                introspectedTable.setRemarks(remarks);
+                introspectedTable.setRemarks(getRemarks(rs, null));
                 introspectedTable.setTableType(tableType);
-
             }
             closeResultSet(rs);
         } catch (SQLException e) {
             log.error("Exception retrieving table metadata", e);
         }
+    }
+
+    /**
+     * get table or column remarks
+     * @param rs ResultSet
+     * @return remarks
+     * @throws SQLException if a database access error occurs,
+     * this method is called on a closed <code>Statement</code>, the given
+     *            SQL statement produces anything other than a single
+     *            <code>ResultSet</code> object, the method is called on a
+     * <code>PreparedStatement</code> or <code>CallableStatement</code>
+     */
+    private String getRemarks(ResultSet rs, String colName) throws SQLException {
+        if (databaseProduct == DatabaseProduct.SQL_SERVER) {
+            return getSQLServerRemarks(
+                    rs.getString("TABLE_NAME"), colName);
+        }
+        return rs.getString("REMARKS");
+    }
+
+    /**
+     * get SQL Server remarks
+     * https://docs.microsoft.com/en-us/sql/connect/jdbc/reference/getcolumns-method-sqlserverdatabasemetadata?view=sql-server-ver15#remarks
+     * Note: SQL Server always returns null for this column.
+     * @param tableName the table name
+     * @param colName the column name
+     * @return return the column remarks if column name not null, return the table remarks if column name is null
+     * @throws SQLException if a database access error occurs,
+     * this method is called on a closed <code>Statement</code>, the given
+     *            SQL statement produces anything other than a single
+     *            <code>ResultSet</code> object, the method is called on a
+     * <code>PreparedStatement</code> or <code>CallableStatement</code>
+     */
+    private String getSQLServerRemarks(String tableName, String colName) throws SQLException {
+        Statement statement = databaseMetaData.getConnection().createStatement();
+        String sql = String.format("SELECT objname, cast(value as varchar) as REMARKS  " +
+                        "FROM fn_listextendedproperty ('MS_DESCRIPTION','schema', 'dbo', 'table', '%s', %s)",
+                tableName, colName == null ? "NULL, NULL" : String.format("'column','%s'", colName));
+        ResultSet rs = statement.executeQuery(sql);
+        if (rs.next()) {
+            return rs.getString("REMARKS");
+        }
+        return "";
     }
 }

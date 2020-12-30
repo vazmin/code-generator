@@ -79,6 +79,7 @@ public class IntrospectedTable {
     }
 
     public String getClearRemark() {
+        if (remarks == null) return "";
         if (remarks.endsWith("表")) {
             return remarks.substring(0, remarks.lastIndexOf("表"));
         }
@@ -194,6 +195,10 @@ public class IntrospectedTable {
         return Stream.of(primaryKeyColumns.stream(), baseColumns.stream())
                 .flatMap(Function.identity())
                 .collect(Collectors.toList());
+    }
+
+    public IntrospectedColumn getFirstPK() {
+        return primaryKeyColumns.stream().findFirst().get();
     }
 
     public boolean hasPrimaryKeyColumns() {

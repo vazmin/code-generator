@@ -282,6 +282,7 @@ public class IntrospectedColumn {
     }
 
     public String getClearRemark() {
+        if (remarks == null) return "";
         StringTokenizer token = new StringTokenizer(remarks, ",，.:： ");
         if (token.countTokens() != 0) {
             while (token.hasMoreTokens()) {
