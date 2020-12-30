@@ -37,10 +37,8 @@ application:
         - tpl-path: i18n/zh-cn/tableName.json.ftl
           target: /assets/i18n/zh-cn/${application.modulePkg}
   author: wangzhiming
-
-spring:
-  datasource:
-    url: jdbc:mysql://localhost:3306/manage_platform?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&useInformationSchema=true
+  hikari-config:
+    jdbc-url: jdbc:mysql://localhost:3306/manage_platform?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&useInformationSchema=true
     username: root
     password: "chwing"
 

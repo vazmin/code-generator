@@ -1,6 +1,7 @@
 package com.github.vazmin.code.generator.config;
 
 import com.github.vazmin.code.generator.utils.StringUtility;
+import com.zaxxer.hikari.HikariConfig;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.Assert;
 
@@ -37,6 +38,12 @@ public class AppProperties {
     private List<Folder> folders;
 
     private final Url url = new Url();
+
+    private final HikariConfig hikariConfig = new HikariConfig();
+
+    public HikariConfig getHikariConfig() {
+        return hikariConfig;
+    }
 
     /** java type resolver config */
     private final JavaTypeResolver javaTypeResolver = new JavaTypeResolver();
@@ -250,6 +257,7 @@ public class AppProperties {
         public String getTplPkg() {
             String tplPkg =  target != null ?
                     StringUtility.pathToPackage(target) : "";
+            if (tplPkg.equals(".")) return "";
             return tplPkg.startsWith(".") || tplPkg.equals("") ? tplPkg : "." + tplPkg;
         }
     }

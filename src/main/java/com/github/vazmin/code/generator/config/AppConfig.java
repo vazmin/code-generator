@@ -4,6 +4,8 @@ import com.github.vazmin.code.generator.api.JavaTypeResolver;
 import com.github.vazmin.code.generator.engine.FreeMarkerTplEngine;
 import com.github.vazmin.code.generator.engine.TplEngine;
 import com.github.vazmin.code.generator.internal.types.JavaTypeResolverDefaultImpl;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean;
@@ -27,5 +29,11 @@ public class AppConfig {
             AppProperties appProperties) {
         freemarker.template.Configuration configuration = freeMarkerConfigurationFactoryBean.getObject();
         return new FreeMarkerTplEngine(configuration, appProperties);
+    }
+
+    @Bean
+    public HikariDataSource dataSource(AppProperties appProperties) {
+        HikariConfig config = appProperties.getHikariConfig();
+        return new HikariDataSource(config);
     }
 }
